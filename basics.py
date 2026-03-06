@@ -1,4 +1,7 @@
 import argparse
+import sys
+import numpy as np
+
 
 def sum(args):
     a = args.a
