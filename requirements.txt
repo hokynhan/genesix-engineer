@@ -1,0 +1,6 @@
+asyncio
+ortools
+scipy
+matplotlib
+fastapi
+uvicorn
