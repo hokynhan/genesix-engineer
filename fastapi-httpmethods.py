@@ -231,7 +231,7 @@ async def get_timezone(
     async with httpx.AsyncClient() as client:
         try:
             res = await client.get(
-                f"https://api.allorigins.win/raw?url=http://worldtimeapi.org/api/timezone",
+                f"https://aisenseapi.com/services/v1/timezones/{offset}",
                 timeout=5
             )
             res.raise_for_status()
