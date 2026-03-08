@@ -134,32 +134,44 @@ async def patch_item(
 from typing import Optional
 from pydantic import Field
 
-# class ArticlePostResponse(BaseModel):
-#     code: str
-#     title: str
-#     author: str
-#     published_date: datetime
-#     version: float
-#     created_at: datetime=datetime.utcnow()
+class ArticlePostResponse(BaseModel):
+    code: str
+    title: str
+    author: str
+    published_date: datetime
+    version: float
+    created_at: datetime=datetime.utcnow()
 
-# class ItemRequest(BaseModel):
-#     code:       str = Field(..., min_length=1, max_length=100,
-#                             description="code format API-xxx",
-#                             examples=["API-001"])
-#     title:      str = Field(..., max_length=200, 
-#                             description="Title of the article",
-#                             examples=["Understanding Pydantic"])
-#     author:     str = Field(..., max_length=100,
-#                             description="Author's name",
-#                             examples=["Alice Johnson"])
-#     published_date: Optional[datetime] = Field(..., regex=r"^\d{4}-\d{2}-\d{2}$",
-#                                 description="Published date in YYYY-MM-DD format",
-#                                 examples=["2024-03-15"])
-#     version:    float = Field(default=1.0, ge=1.0,
-#                             description="Version of the article")
-#     created_at: Optional[datetime] = Field(default_factory=datetime.utcnow,
-#                                 description="Creation timestamp")
+class ArticlePostRequest(BaseModel):
+    code:       str = Field(..., min_length=7, max_length=20,
+                            description="code format API-xxx",
+                            examples=["API-001"])
+    title:      str = Field(..., max_length=200, 
+                            description="Title of the article",
+                            examples=["Understanding Pydantic"])
+    author:     str = Field(..., max_length=100,
+                            description="Author's name",
+                            examples=["Alice Johnson"])
+    published_date: Optional[datetime] = Field(..., regex=r"^\d{4}-\d{2}-\d{2}$",
+                                description="Published date in YYYY-MM-DD format",
+                                examples=["2024-03-15"])
+    version:    float = Field(default=1.0, ge=1.0,
+                            description="Version of the article")
+    created_at: Optional[datetime] = Field(None, description="Creation timestamp, auto-set by server")
 
+@app.post("/articles/",response_model=ArticlePostResponse, status_code=201, summary="Create a new article")
+def create_article(article: ArticlePostRequest):
+    articles = load_articles()
+
+    if article.code in [existing["code"] for existing in articles]:
+        raise HTTPException(status_code=400, detail=f"Article with code {article.code} already exists")
+
+    new_article = article.model_dump()
+    new_article["created_at"] = datetime.utcnow().isoformat()
+    articles.append(new_article)
+    save_articles(articles)
+
+    return new_article
 
 # @app.post("/articles/",
 #           summary="Create a new article",
