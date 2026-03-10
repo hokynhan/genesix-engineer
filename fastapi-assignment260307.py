@@ -55,15 +55,12 @@ async def save_articles(articles: list[dict]):
 # =========================
 # GET – Read Data
 # =========================
-class ItemGetRequest(BaseModel):
-    skip: Optional[int] = None
-    limit: Optional[int] = None
 
 class ArticleGetResponse(BaseModel):
     code: str
     title: str
     author: str
-    published_date: datetime
+    published_date: Optional[str]
     version: str
     created_at: datetime
 
@@ -74,9 +71,10 @@ class ArticleGetListResponse(BaseModel):
          response_model=ArticleGetListResponse,
          summary="List all articles",
          )
+
 async def list_articles(
-    skip: int = Query(default=0, description="Number of items to skip"),
-    limit: int = Query(default=10, description="Maximum number of items to return")
+    skip: int = Query(0, description="Number of items to skip"),
+    limit: int = Query(10, description="Maximum number of items to return")
     ):
     articles = await load_articles()
     return {"itemList": articles[skip: skip + limit]}
