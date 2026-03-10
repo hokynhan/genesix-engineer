@@ -1,4 +1,5 @@
 import uvicorn
+import math
 from fastapi import FastAPI
 from datetime import datetime
 from typing import Optional
@@ -22,12 +23,7 @@ def sum_two_numbers(num1: int, num2: int):
 
 @app.get("/factorial/{number}",summary="Compute n!")
 def get_factorial(number: int):
-    def compute_factorial(n):
-        if n == 0:
-            return 1
-        else:
-            return n * compute_factorial(n - 1)
-    return {"factorial is": compute_factorial(number)}
+    return {"factorial is": math.factorial(number)}
 
 
 # =========================

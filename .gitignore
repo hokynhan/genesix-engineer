@@ -3,3 +3,5 @@ hellp.py
 __pycache__/
 schedule_heatmap.png
 sensitivity.png
+postman/
+.postman/
