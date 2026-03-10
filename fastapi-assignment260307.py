@@ -86,11 +86,12 @@ async def list_articles(
 class ItemUpdate(BaseModel):
     title: Optional[str] = None
     author: Optional[str] = None
+    published_date: Optional[str] = None
     version: Optional[str] = None
 
 
 @app.patch("/articles/{code}",
-            # response_model=ArticlePostResponse,
+            # response_model=ArticleGetListResponse,
             summary="Edit by code",
          )
 
@@ -103,17 +104,16 @@ async def patch_item(
 
     articles = await load_articles()
 
-    # locate the item and its index
     codes = [article["code"] for article in articles]
     if article_code not in codes:
         raise HTTPException(status_code=404, detail=f"Item {article_code} not found")
-
+    
     idx = codes.index(article_code)
-    existing_article = articles[idx]
+    existing = articles[idx]
 
     # merge only provided fields
     patch_data = updates.model_dump(exclude_unset=True)
-    updated_article = {**existing_article, **patch_data}
+    updated_article = {**existing, **patch_data}
 
     # replace in list and persist back to file
     articles[idx] = updated_article
