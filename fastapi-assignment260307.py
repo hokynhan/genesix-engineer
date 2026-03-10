@@ -132,23 +132,25 @@ class ArticlePostResponse(BaseModel):
     code: str
     title: str
     author: str
-    published_date: datetime
+    published_date: Optional[str]
     version: str
     created_at: datetime
 
 class ArticlePostRequest(BaseModel):
-    code:       str = Field(..., min_length=7, max_length=20,
-                            description="code format ART-xxx",
-                            examples=["ART-001"])
-    title:      str = Field(..., max_length=200, 
-                            description="Title of the article",
-                            examples=["Understanding Pydantic"])
-    author:     str = Field(..., max_length=100,
-                            description="Author's name",
-                            examples=["Alice Johnson"])
-    version:    str = Field(..., max_length=10,
-                            description="Version of the article",
-                            examples=["1.0"])
+    code:           str = Field(..., min_length=7, max_length=20,
+                                description="code format ART-xxx",
+                                examples=["ART-001"])
+    title:          str = Field(..., max_length=200, 
+                                description="Title of the article",
+                                examples=["Understanding Pydantic"])
+    author:         str = Field(..., max_length=100,
+                                description="Author's name",
+                                examples=["Alice Johnson"])
+    published_date: Optional[str] = Field(None, description="Published date in YYYY-MM-DD format",
+                                examples=["2024-03-15"])
+    version:        str = Field(..., max_length=10,
+                                description="Version of the article",
+                                examples=["1.0"])
 
 @app.post("/articles/",response_model=ArticlePostResponse, status_code=201, summary="Create a new article")
 async def create_article(article: ArticlePostRequest):
@@ -157,9 +159,9 @@ async def create_article(article: ArticlePostRequest):
     if article.code in [existing["code"] for existing in articles]:
         raise HTTPException(status_code=400, detail=f"Article with code {article.code} already exists")
 
-    new_article = article.model_dump()
-    new_article["published_date"] = datetime.utcnow().isoformat()
+    new_article = {**article.model_dump()}
     new_article["created_at"] = datetime.utcnow().isoformat()
+    
     articles.append(new_article)
     await save_articles(articles)
 
