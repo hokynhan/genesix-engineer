@@ -4,3 +4,7 @@ scipy
 matplotlib
 fastapi
 uvicorn
+requests
+parsel
+supabase
+python-dotenv
