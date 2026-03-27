@@ -6,6 +6,5 @@ sensitivity.png
 postman/
 .postman/
 opensearch/
-vue-login-app/
 package-lock.json
 .DS_Store
