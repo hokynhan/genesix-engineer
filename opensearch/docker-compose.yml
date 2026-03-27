@@ -1,0 +1,33 @@
+services:
+  opensearch:
+    image: opensearchproject/opensearch:3.1.0
+    container_name: tool-opensearch
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g
+      - plugins.security.ssl.http.enabled=false
+      - plugins.security.disabled=false
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=UOUnEx4pro92mhQz
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./opensearch-data:/usr/share/opensearch/data
+    ports:
+      - 9200:9200
+      - 9601:9600
+
+  dashboards:
+    image: opensearchproject/opensearch-dashboards:3.1.0
+    container_name: tool-opensearch-dashboards
+    environment:
+      - OPENSEARCH_HOSTS=["http://opensearch:9200"]
+      - DISABLE_SECURITY_DASHBOARDS_PLUGIN=false
+      - OPENSEARCH_USERNAME=admin
+      - OPENSEARCH_PASSWORD=UOUnEx4pro92mhQz
+    ports:
+      - 5601:5601
+    depends_on:
+      - opensearch
