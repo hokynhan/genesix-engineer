@@ -8,3 +8,7 @@ requests
 parsel
 supabase
 python-dotenv
+scikit-learn
+seaborn
+lightgbm
+xgboost
